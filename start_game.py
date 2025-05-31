@@ -269,13 +269,13 @@ def new_map():
 def save_equipment(gift, equipment, weapon, s1, s2, s3, s4):
     global gift_locked
     equipment_data.update({
-        "gift": gift[:100],
-        "equipment": equipment[:100],
-        "weapon": weapon[:100],
-        "skill1": s1[:100],
-        "skill2": s2[:100],
-        "skill3": s3[:100],
-        "skill4": s4[:100]
+        "gift": gift[:200],
+        "equipment": equipment[:200],
+        "weapon": weapon[:200],
+        "skill1": s1[:200],
+        "skill2": s2[:200],
+        "skill3": s3[:200],
+        "skill4": s4[:200]
     })
     with open("equipment.json", "w") as f:
         json.dump(equipment_data, f)
@@ -322,14 +322,14 @@ with gr.Blocks() as demo:
 
     with gr.Row():
         with gr.Column():
-            gift = gr.Textbox(label="天赋【超100字自动截断】", placeholder="无")
-            equip = gr.Textbox(label="装备【超100字自动截断】", placeholder="无", interactive=False)
-            weapon = gr.Textbox(label="武器【超100字自动截断】", placeholder="无", interactive=False)
+            gift = gr.Textbox(label="天赋【超200字自动截断】", placeholder="无")
+            equip = gr.Textbox(label="装备【超200字自动截断】", placeholder="无", interactive=False)
+            weapon = gr.Textbox(label="武器【超200字自动截断】", placeholder="无", interactive=False)
         with gr.Column():
-            s1 = gr.Textbox(label="技能1【超100字自动截断】", placeholder="无", interactive=False)
-            s2 = gr.Textbox(label="技能2【超100字自动截断】", placeholder="无", interactive=False)
-            s3 = gr.Textbox(label="技能3【超100字自动截断】", placeholder="无", interactive=False)
-            s4 = gr.Textbox(label="技能4【超100字自动截断】", placeholder="无", interactive=False)
+            s1 = gr.Textbox(label="技能1【超200字自动截断】", placeholder="无", interactive=False)
+            s2 = gr.Textbox(label="技能2【超200字自动截断】", placeholder="无", interactive=False)
+            s3 = gr.Textbox(label="技能3【超200字自动截断】", placeholder="无", interactive=False)
+            s4 = gr.Textbox(label="技能4【超200字自动截断】", placeholder="无", interactive=False)
 
     save_btn = gr.Button("💾 保存装备")
     save_status = gr.Textbox(label="保存状态", interactive=False)

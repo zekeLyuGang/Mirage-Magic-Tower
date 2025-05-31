@@ -30,11 +30,11 @@ def save_monster(
         saved_files = []
         # 构建基础怪物数据
         monster_template = {
-            "type": monster_type.strip()[:100],
-            "weakness": weakness.strip()[:100],
-            "immunity": immunity.strip()[:100],
+            "type": monster_type.strip()[:200],
+            "weakness": weakness.strip()[:200],
+            "immunity": immunity.strip()[:200],
             "attacks": [
-                a.strip()[:100] for a in [attack1, attack2, attack3, attack4] if a.strip()
+                a.strip()[:200] for a in [attack1, attack2, attack3, attack4] if a.strip()
             ],
             "create_time": datetime.now().isoformat()
         }
@@ -43,7 +43,7 @@ def save_monster(
         for level in range(start_level, end_level + 1):
             # 复制基础数据并添加楼层信息
             monster_data = monster_template.copy()
-            monster_data["level"] = level
+            monster_data["level"] = f"{start_level}-{end_level}"
 
             # 创建保存目录
             save_dir = f"monsters/{level}"
@@ -118,18 +118,18 @@ with gr.Blocks(title="怪物编辑器") as app:
         with gr.Column():
             monster_type = gr.Textbox(
                 label="种类",
-                placeholder="例如：哥布林, 不要超过100字",
-                max_length=100
+                placeholder="例如：哥布林, 不要超过200字",
+                max_length=200
             )
             weakness = gr.Textbox(
                 label="弱点属性",
-                placeholder="例如：火属性, 不要超过100字",
-                max_length=100
+                placeholder="例如：火属性, 不要超过200字",
+                max_length=200
             )
             immunity = gr.Textbox(
                 label="免疫属性",
-                placeholder="例如：毒属性, 不要超过100字",
-                max_length=100
+                placeholder="例如：毒属性, 不要超过200字",
+                max_length=200
             )
 
             # 楼层范围输入
@@ -156,23 +156,23 @@ with gr.Blocks(title="怪物编辑器") as app:
         with gr.Column():
             attack1 = gr.Textbox(
                 label="攻击方式 1",
-                placeholder="例如：重击, 不要超过100字",
-                max_length=100
+                placeholder="例如：重击, 不要超过200字",
+                max_length=200
             )
             attack2 = gr.Textbox(
                 label="攻击方式 2",
-                placeholder="例如：冲锋, 不要超过100字",
-                max_length=100
+                placeholder="例如：冲锋, 不要超过200字",
+                max_length=200
             )
             attack3 = gr.Textbox(
                 label="攻击方式 3",
-                placeholder="例如：眩晕, 不要超过100字",
-                max_length=100
+                placeholder="例如：眩晕, 不要超过200字",
+                max_length=200
             )
             attack4 = gr.Textbox(
                 label="攻击方式 4",
-                placeholder="例如：横扫, 不要超过100字",
-                max_length=100
+                placeholder="例如：横扫, 不要超过200字",
+                max_length=200
             )
 
     gr.Markdown("💡 提示：指定起始楼层和终止楼层会为范围内每一层创建一个独立的怪物")
