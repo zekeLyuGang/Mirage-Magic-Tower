@@ -166,7 +166,7 @@ def move_player(direction):
         dead, story = get_story(tower_level)
         if dead:
             is_dead = True
-            message += f"\n💀 遭遇不幸:｛story｝"
+            message += f"\n💀 遭遇不幸:{story}"
             # 删除装备文件
             if os.path.exists("equipment.json"):
                 os.remove("equipment.json")
