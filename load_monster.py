@@ -15,7 +15,7 @@ def save_monster(
         attack3,
         attack4
 ):
-    """保存怪物数据到JSON文件"""
+    """保存怪物数据到JSON文件，成功后清空输入框"""
     try:
         # 确保楼层是整数
         start_level = int(start_level)
@@ -23,9 +23,9 @@ def save_monster(
 
         # 楼层范围验证
         if not (1 <= start_level <= 100 and 1 <= end_level <= 100):
-            return "楼层必须在1-100范围内"
+            return ["楼层必须在1-100范围内"] + [gr.update()] * 9
         if start_level > end_level:
-            return "起始楼层不能大于终止楼层"
+            return ["起始楼层不能大于终止楼层"] + [gr.update()] * 9
 
         saved_files = []
         # 构建基础怪物数据
@@ -43,7 +43,7 @@ def save_monster(
         for level in range(start_level, end_level + 1):
             # 复制基础数据并添加楼层信息
             monster_data = monster_template.copy()
-            monster_data["level"] = f"{start_level}-{end_level}"
+            monster_data["level"] = level
 
             # 创建保存目录
             save_dir = f"monsters/{level}"
@@ -60,12 +60,25 @@ def save_monster(
 
         # 生成成功消息
         level_range = f"{start_level}层" if start_level == end_level else f"{start_level}-{end_level}层"
-        return f"✅ 成功保存了{level_range}的{len(saved_files)}个怪物文件"
+
+        # 返回成功消息并清空输入框
+        return [
+            f"✅ 成功保存了{level_range}的{len(saved_files)}个怪物文件",  # status
+            "",  # monster_type
+            "",  # weakness
+            "",  # immunity
+            start_level,  # start_level
+            end_level,  # end_level
+            "",  # attack1
+            "",  # attack2
+            "",  # attack3
+            ""  # attack4
+        ]
 
     except ValueError:  # 输入不是有效数值
-        return "❌ 请输入有效的楼层数值(整数)"
+        return ["❌ 请输入有效的楼层数值(整数)"] + [gr.update()] * 9
     except Exception as e:  # 其他错误
-        return f"❌ 保存失败：{str(e)}"
+        return [f"❌ 保存失败：{str(e)}"] + [gr.update()] * 9
 
 
 def update_end_level(start_level_input, current_end_level):
@@ -98,7 +111,7 @@ def ensure_integer_input(level_input):
 
 
 # 界面布局
-with gr.Blocks(title="怪物编辑器", css="#level-input {margin-bottom: 15px;}") as app:
+with gr.Blocks(title="怪物编辑器") as app:
     gr.Markdown("## 🧌 怪物属性编辑器")
 
     with gr.Row():
@@ -171,7 +184,32 @@ with gr.Blocks(title="怪物编辑器", css="#level-input {margin-bottom: 15px;}
     save_btn.click(
         save_monster,
         inputs=[monster_type, weakness, immunity, start_level, end_level, attack1, attack2, attack3, attack4],
-        outputs=status
+        outputs=[status, monster_type, weakness, immunity, start_level, end_level, attack1, attack2, attack3, attack4]
+    )
+
+    # 添加一个清空按钮
+    clear_btn = gr.Button("🧹 清空所有输入", variant="secondary")
+
+
+    # 清空按钮事件绑定
+    def clear_form():
+        return [
+            "输入已清空",  # status
+            "",  # monster_type
+            "",  # weakness
+            "",  # immunity
+            1,  # start_level
+            1,  # end_level
+            "",  # attack1
+            "",  # attack2
+            "",  # attack3
+            ""  # attack4
+        ]
+
+
+    clear_btn.click(
+        clear_form,
+        outputs=[status, monster_type, weakness, immunity, start_level, end_level, attack1, attack2, attack3, attack4]
     )
 
     # 楼层输入验证
