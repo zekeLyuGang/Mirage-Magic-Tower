@@ -162,7 +162,7 @@ def move_player(direction):
     # 新增死亡判断
     current_pos = (new_i, new_j)
     if current_pos not in [(GRID_SIZE - 1, GRID_SIZE - 1), (0, 0)]:
-        dead, story = get_story()
+        dead, story = get_story(tower_level)
         if dead:
             is_dead = True
             message += f"\n💀 遭遇不幸:"
