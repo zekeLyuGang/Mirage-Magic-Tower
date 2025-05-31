@@ -262,13 +262,13 @@ def new_map():
 def save_equipment(gift, equipment, weapon, s1, s2, s3, s4):
     global gift_locked
     equipment_data.update({
-        "gift": gift,
-        "equipment": equipment,
-        "weapon": weapon,
-        "skill1": s1,
-        "skill2": s2,
-        "skill3": s3,
-        "skill4": s4
+        "gift": gift[:100],
+        "equipment": equipment[:100],
+        "weapon": weapon[:100],
+        "skill1": s1[:100],
+        "skill2": s2[:100],
+        "skill3": s3[:100],
+        "skill4": s4[:100]
     })
     with open("equipment.json", "w") as f:
         json.dump(equipment_data, f)
@@ -334,13 +334,6 @@ with gr.Blocks() as demo:
         s1, s2, s3, s4,
         newmap_btn
     ]
-    # 100字 以上自动截断
-    for component in [gift, equip, weapon, s1, s2, s3, s4]:
-        component.change(
-            fn=lambda x: x[:100],
-            inputs=component,
-            outputs=component
-        )
 
     # 方向按钮事件绑定
     for btn, direction in [(forward_btn, "forward"),
