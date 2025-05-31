@@ -7,11 +7,13 @@ from setting import HW_REUQEST_URL
 from openai import OpenAI
 
 client = OpenAI(api_key=DEEPSEEK_KEY, base_url="https://api.deepseek.com")
+beaten_monster = {}
 system_prompt = """
 你是在一个名字叫做幻境迷宫的游戏中主宰一切的最高意志，无所不能掌握一切生死的神，
 请根据提供的怪物的属性和攻击方式，玩家的天赋、武器、装备、技能来决定当前这场战斗的输赢，并给出约200字左右的战斗经过描述，输赢要合乎逻辑。
 请写的有趣一些，有奇幻色彩一些,多使用一些图标，把最后表述中的玩家替换为“你”字以便故事更有带入感，请记得你不是玩家。
 """
+
 
 # def get_story(current_level):
 #     """模拟随机死亡事件，10%概率死亡"""
@@ -25,13 +27,13 @@ system_prompt = """
 #     ]
 #     return is_dead, random.choice(stories)
 
+
 def get_story(current_level):
     is_dead = False
     current_story = ""
     try:
-        current_story = get_story_description(current_level)
+        is_dead, current_story = get_story_description(current_level)
         print(current_story)
-        is_dead = get_story_isdead(current_story)
         print(f"isdead：{is_dead}")
     except Exception as e:
         print(f"❌连接deepseek失败：{str(e)}")
@@ -52,7 +54,7 @@ def get_user_prompt(level: int):
     with open("equipment.json", "r", encoding='utf-8') as f:
         current_player_data = json.load(f)
 
-    return f"""
+    return select_monster_data['type'], current_player_data, f"""
     怪物的属性如下：
     怪物的类型是{select_monster_data['type']},
     怪物的弱点是{select_monster_data['weakness']},
@@ -70,30 +72,26 @@ def get_user_prompt(level: int):
 
 
 def get_story_description(current_level):
-    global client, system_prompt
+    global client, system_prompt, beaten_monster
     current_story = ""
+    is_dead = False
+    current_monster, current_player_data, user_prompt = get_user_prompt(current_level)
+    if current_monster in beaten_monster.keys():
+        if beaten_monster[current_monster][0] == current_player_data:
+            return  False, beaten_monster[current_monster][1]
+
     try:
         response = client.chat.completions.create(
             model="deepseek-chat",
             messages=[
                 {"role": "system", "content": f"{system_prompt}"},
-                {"role": "user", "content": f"{get_user_prompt(current_level)}"},
+                {"role": "user", "content": f"{user_prompt}"},
             ],
             stream=False
         )
 
         current_story = response.choices[0].message.content
-        print(f"✅连接deepseek成功")
-    except Exception as e:
-        print(f"❌连接deepseek失败：{str(e)}")
-    finally:
-        return current_story
-
-
-def get_story_isdead(current_story):
-    global client
-    is_dead = False
-    try:
+        print(f"✅连接deepseek，成功获取故事")
         response = client.chat.completions.create(
             model="deepseek-chat",
             messages=[
@@ -103,14 +101,15 @@ def get_story_isdead(current_story):
             ],
             stream=False
         )
-
         if "是" in response.choices[0].message.content:
             is_dead = True
-        print(f"✅连接deepseek成功")
+        print(f"✅连接deepseek，成功判断玩家是否死亡")
     except Exception as e:
         print(f"❌连接deepseek失败：{str(e)}")
     finally:
-        return is_dead
+        beaten_monster[current_monster] = [current_player_data,current_story]
+        return is_dead, current_story
+
 
 if __name__ == '__main__':
     get_story(1)

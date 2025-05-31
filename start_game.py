@@ -28,6 +28,7 @@ equipment_data = {
     "skill3": "无",
     "skill4": "无"
 }
+reset_equipment_data = equipment_data.copy()
 floor_completed = False
 gift_locked = False
 is_dead = False
@@ -169,6 +170,9 @@ def move_player(direction):
             # 删除装备文件
             if os.path.exists("equipment.json"):
                 os.remove("equipment.json")
+                with open("equipment.json", "w") as f:
+                    json.dump(reset_equipment_data, f)
+
             # 禁用所有按钮（除了重置按钮）
             return (
                 visualize_maze(),
@@ -199,7 +203,7 @@ def move_player(direction):
 
     # 检查终点
     if tuple(player_pos) == (0, 0):
-        message = "🎉 成功抵达出口！"
+        message = "🎉 成功抵达魔塔下一层入口！"
         floor_completed = True
         newmap_btn_state = gr.update(interactive=True)
 
@@ -226,6 +230,9 @@ def reset_game():
     # 清空保存文件
     if os.path.exists("equipment.json"):
         os.remove("equipment.json")
+        with open("equipment.json", "w") as f:
+            json.dump(reset_equipment_data, f)
+
     # 重置状态
     initial_maze = generate_guaranteed_maze()
     player_pos = [GRID_SIZE - 1, GRID_SIZE - 1]
