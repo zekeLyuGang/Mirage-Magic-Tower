@@ -35,6 +35,7 @@ is_dead = False
 tower_level = 1
 gift_description = ""
 
+
 # ----------------- 开局抽天赋 -----------------
 def random_select_gift():
     gift_data_descrion = ""
@@ -43,6 +44,7 @@ def random_select_gift():
         gift_data = random.choices(gifts_data['gift'])[0]
         gift_data_descrion += f"{gift_data['name']}:{gift_data['description']}"
     return gift_data_descrion
+
 
 # ----------------- 迷宫生成逻辑 -----------------
 def generate_guaranteed_maze():
@@ -251,10 +253,11 @@ def reset_game():
     floor_completed = False
     gift_locked = False
     equipment_data = {k: "" for k in equipment_data}
+    current_gift = random_select_gift()
     return (
         visualize_maze(),
         "",
-        gr.update(value=random_select_gift(), interactive=True),
+        gr.update(value=current_gift, interactive=True),
         gr.update(value="", interactive=False),
         gr.update(value="", interactive=False),
         gr.update(value="", interactive=False),
