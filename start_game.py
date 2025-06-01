@@ -33,7 +33,16 @@ floor_completed = False
 gift_locked = False
 is_dead = False
 tower_level = 1
+gift_description = ""
 
+# ----------------- 开局抽天赋 -----------------
+def random_select_gift():
+    gift_data_descrion = ""
+    with open(f'player{os.sep}gift.json', 'r', encoding='utf-8') as f:
+        gifts_data = json.load(f)
+        gift_data = random.choices(gifts_data['gift'])[0]
+        gift_data_descrion += f"{gift_data['name']}:{gift_data['description']}"
+    return gift_data_descrion
 
 # ----------------- 迷宫生成逻辑 -----------------
 def generate_guaranteed_maze():
@@ -92,13 +101,12 @@ def generate_guaranteed_maze():
         item_positions[pos] = "weapon"
         valid_cells.remove(pos)
 
-    # 技能（1-2）
-    for _ in range(random.randint(1, 2)):
-        if valid_cells:
-            pos = random.choice(valid_cells)
-            maze[pos] = 5
-            item_positions[pos] = f"skill{random.randint(1, 4)}"
-            valid_cells.remove(pos)
+    # 技能（0-1）
+    if random.random() < 0.5 and valid_cells:
+        pos = random.choice(valid_cells)
+        maze[pos] = 5
+        item_positions[pos] = f"skill{random.randint(1, 4)}"
+        valid_cells.remove(pos)
 
     return maze
 
@@ -187,19 +195,23 @@ def move_player(direction):
                 gr.update(interactive=False)
             )
         else:
-            message += f"\n⚔️ 遭遇战斗："
+            message += f"\n⚔️ 遭遇战斗：\n"
         message += f"{story}\n"
     if 0 <= new_i < GRID_SIZE and 0 <= new_j < GRID_SIZE:
         if initial_maze[new_i, new_j] != 1:
             player_pos[0], player_pos[1] = new_i, new_j
             current_pos = (new_i, new_j)
 
-            # 检查物品收集
+            # 检查物品收集,随机获取一个初始描述
             if current_pos in item_positions:
                 item_type = item_positions[current_pos]
+                with open(f'player{os.sep}{item_type}.json', 'r', encoding='utf-8') as f:
+                    items_data = json.load(f)
+                    item_data = random.choices(items_data[item_type])[0]
+                    item_data_description = f"{item_data['name']}:{item_data['description']}"
                 if item_type in updates:
-                    updates[item_type] = gr.update(interactive=True)
-                message += f"🎁 获得{item_type}！"
+                    updates[item_type] = gr.update(value=item_data_description, interactive=True)
+                message += f"🎁 获得{item_type}！\n {item_data['name']}【可自定义】\n{item_data['description']}"
 
     # 检查终点
     if tuple(player_pos) == (0, 0):
@@ -222,7 +234,7 @@ def move_player(direction):
 
 
 def reset_game():
-    global player_pos, floor_completed, gift_locked, equipment_data, initial_maze, is_dead,tower_level
+    global player_pos, floor_completed, gift_locked, equipment_data, initial_maze, is_dead, tower_level
     # 在一楼复活
     is_dead = False
     tower_level = 1
@@ -242,7 +254,7 @@ def reset_game():
     return (
         visualize_maze(),
         "",
-        gr.update(value="", interactive=True),
+        gr.update(value=random_select_gift(), interactive=True),
         gr.update(value="", interactive=False),
         gr.update(value="", interactive=False),
         gr.update(value="", interactive=False),
@@ -308,6 +320,7 @@ with gr.Blocks() as demo:
 
     with gr.Row():
         map_display = gr.HTML()
+    with gr.Row():
         status = gr.Textbox(label="游戏状态", interactive=False)
 
     with gr.Row():
@@ -317,19 +330,19 @@ with gr.Blocks() as demo:
         right_btn = gr.Button("➡️ 向右")
 
     with gr.Row():
-        reset_btn = gr.Button("🔄 再来一次")
+        reset_btn = gr.Button("🔄 开始游戏/再来一次")
         newmap_btn = gr.Button("下个地图", interactive=False)
 
     with gr.Row():
         with gr.Column():
-            gift = gr.Textbox(label="天赋【超200字自动截断】", placeholder="无")
-            equip = gr.Textbox(label="装备【超200字自动截断】", placeholder="无", interactive=False)
-            weapon = gr.Textbox(label="武器【超200字自动截断】", placeholder="无", interactive=False)
+            gift = gr.Textbox(label="天赋【可以自己写,超200字自动截断】", placeholder="无", interactive=True)
+            equip = gr.Textbox(label="装备【可以自己写,超200字自动截断】", placeholder="无", interactive=False)
+            weapon = gr.Textbox(label="武器【可以自己写,超200字自动截断】", placeholder="无", interactive=False)
         with gr.Column():
-            s1 = gr.Textbox(label="技能1【超200字自动截断】", placeholder="无", interactive=False)
-            s2 = gr.Textbox(label="技能2【超200字自动截断】", placeholder="无", interactive=False)
-            s3 = gr.Textbox(label="技能3【超200字自动截断】", placeholder="无", interactive=False)
-            s4 = gr.Textbox(label="技能4【超200字自动截断】", placeholder="无", interactive=False)
+            s1 = gr.Textbox(label="技能1【可以自己写,超200字自动截断】", placeholder="无", interactive=False)
+            s2 = gr.Textbox(label="技能2【可以自己写,超200字自动截断】", placeholder="无", interactive=False)
+            s3 = gr.Textbox(label="技能3【可以自己写,超200字自动截断】", placeholder="无", interactive=False)
+            s4 = gr.Textbox(label="技能4【可以自己写,超200字自动截断】", placeholder="无", interactive=False)
 
     save_btn = gr.Button("💾 保存装备")
     save_status = gr.Textbox(label="保存状态", interactive=False)
@@ -354,7 +367,7 @@ with gr.Blocks() as demo:
 
     reset_btn.click(
         reset_game,
-        outputs=move_outputs+ [title]
+        outputs=move_outputs + [title]
     )
 
     newmap_btn.click(
