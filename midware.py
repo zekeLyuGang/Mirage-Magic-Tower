@@ -62,19 +62,19 @@ def get_user_prompt(level: int):
 
     return select_monster_data['type'], current_player_data, f"""
     怪物的属性如下：\n
-    怪物的类型是{select_monster_data['type']},\n
-    怪物的弱点是{select_monster_data['weakness']},\n
-    怪物的免疫属性是{select_monster_data['immunity']},\n
-    怪物的攻击方式是{"/".join(select_monster_data['attacks'])}.\n
+    怪物的类型是:{select_monster_data['type']},\n
+    怪物的弱点是:{select_monster_data['weakness']},\n
+    怪物的免疫属性是:{select_monster_data['immunity']},\n
+    怪物的攻击方式是:{"/".join(select_monster_data['attacks'])}.\n
     玩家的属性如下：\n
-    玩家的天赋是{current_player_data['gift']},\n
-    玩家的装备是{current_player_data['equipment']},\n
-    玩家的武器是{current_player_data['weapon']},\n
-    玩家的技能1是{current_player_data['skill1']},\n
-    玩家的技能2是{current_player_data['skill2']},\n
-    玩家的技能3是{current_player_data['skill3']},\n
-    玩家的技能4是{current_player_data['skill4']},\n
-    {fight_history},
+    玩家的天赋是:{current_player_data['gift']},\n
+    玩家的装备是:{current_player_data['equipment']},\n
+    玩家的武器是:{current_player_data['weapon']},\n
+    玩家的技能1是:{current_player_data['skill1']},\n
+    玩家的技能2是:{current_player_data['skill2']},\n
+    玩家的技能3是:{current_player_data['skill3']},\n
+    玩家的技能4是:{current_player_data['skill4']},\n
+    {fight_history}
     """
 
 
@@ -88,6 +88,7 @@ def get_story_description(current_level):
             return False, f"🕊️此格没有怪物🕊️\n" \
                           f"  🌈 请享受🌈  "
 
+    print(f"玩家和怪物的信息如下：\n{user_prompt}")
     try:
         response = client.chat.completions.create(
             model="deepseek-chat",
@@ -109,7 +110,10 @@ def get_story_description(current_level):
             ],
             stream=False
         )
-        if "是" in response.choices[0].message.content:
+        death_result = response.choices[0].message.content
+        print(f"✅连接deepseek，答复:{death_result}")
+
+        if "是" in death_result:
             is_dead = True
         print(f"✅连接deepseek，成功判断玩家是否死亡")
     except Exception as e:

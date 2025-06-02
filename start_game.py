@@ -3,8 +3,7 @@ import numpy as np
 import random
 import json
 import os
-
-from midware import get_story
+import midware
 
 # 迷宫配置
 GRID_SIZE = 8
@@ -173,7 +172,7 @@ def move_player(direction):
     # 新增死亡判断
     current_pos = (new_i, new_j)
     if current_pos not in [(GRID_SIZE - 1, GRID_SIZE - 1), (0, 0)]:
-        dead, story = get_story(tower_level)
+        dead, story = midware.get_story(tower_level)
         if dead:
             is_dead = True
             message += f"\n💀 遭遇不幸:{story}"
@@ -237,6 +236,7 @@ def move_player(direction):
 
 def reset_game():
     global player_pos, floor_completed, gift_locked, equipment_data, initial_maze, is_dead, tower_level
+
     # 在一楼复活
     is_dead = False
     tower_level = 1
@@ -246,6 +246,8 @@ def reset_game():
         os.remove("equipment.json")
         with open("equipment.json", "w") as f:
             json.dump(reset_equipment_data, f)
+    # 遗忘历史战斗信息
+    midware.beaten_monsters.clear()
 
     # 重置状态
     initial_maze = generate_guaranteed_maze()
