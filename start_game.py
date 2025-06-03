@@ -145,6 +145,8 @@ def move_player(direction):
         return visualize_maze(), "你已阵亡，请重新开始！", *[gr.update(interactive=False)] * 7, gr.update(
             interactive=False)
 
+
+
     old_i, old_j = player_pos
     new_i, new_j = old_i, old_j
 
@@ -167,6 +169,12 @@ def move_player(direction):
         "skill3": gr.update(interactive=False),
         "skill4": gr.update(interactive=False),
     }
+    with open("equipment.json", "r", encoding='utf-8') as f:
+        current_player_data = json.load(f)
+        for key in updates.keys():
+            if key in current_player_data:
+                updates[key] = gr.update(value = current_player_data[key],interactive=False)
+
     newmap_btn_state = gr.update(interactive=False)
 
     # 新增死亡判断
