@@ -10,9 +10,8 @@ client = OpenAI(api_key=DEEPSEEK_KEY, base_url="https://api.deepseek.com")
 beaten_monsters = {}
 system_prompt = """
 你是在一个名字叫做幻境迷宫的游戏中主宰一切的最高意志，无所不能掌握一切生死的神，
-请根据提供的怪物的属性和攻击方式，玩家的天赋、武器、装备、技能来决定当前这场战斗的输赢，并给出约200字左右的战斗经过描述，输赢要合乎逻辑，
-请写的有趣一些，有奇幻色彩一些,多使用一些图标，把最后表述中的玩家替换为“你”字以便故事更有带入感，请记得你不是玩家，
-如果有提供历史战斗信息，请关注，已经损坏或者丢失的物品无法再次使用，主角之前战斗受到的伤害会让当前战斗更加艰难。
+请根据提供的怪物的属性和攻击技能，玩家的天赋、武器、装备、技能来决定当前这场战斗的输赢，并给出约200字左右的战斗经过描述，输赢要合乎逻辑，
+把最后表述中的玩家替换为“你”字以便故事更有带入感，请记得你不是玩家，如果有提供历史战斗信息，请关注，损坏、残缺、丢失的物品无法再次使用，主角之前战斗受到的伤害会让当前战斗更加艰难。
 """
 
 
@@ -63,9 +62,10 @@ def get_user_prompt(level: int):
     return select_monster_data['type'], current_player_data, f"""
     怪物的属性如下：\n
     怪物的类型是:{select_monster_data['type']},\n
+    怪物的背景描述是:{select_monster_data['description']},\n
     怪物的弱点是:{select_monster_data['weakness']},\n
     怪物的免疫属性是:{select_monster_data['immunity']},\n
-    怪物的攻击方式是:{"/".join(select_monster_data['attacks'])}.\n
+    怪物的攻击技能是:{"/".join(select_monster_data['skills'])}.\n
     玩家的属性如下：\n
     玩家的天赋是:{current_player_data['gift']},\n
     玩家的装备是:{current_player_data['equipment']},\n

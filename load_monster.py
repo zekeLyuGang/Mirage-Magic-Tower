@@ -6,14 +6,15 @@ import os
 
 def save_monster(
         monster_type,
+        description,
         weakness,
         immunity,
         start_level,
         end_level,
-        attack1,
-        attack2,
-        attack3,
-        attack4
+        skill1,
+        skill2,
+        skill3,
+        skill4
 ):
     """保存怪物数据到JSON文件，成功后清空输入框"""
     try:
@@ -31,10 +32,11 @@ def save_monster(
         # 构建基础怪物数据
         monster_template = {
             "type": monster_type.strip()[:200],
+            "description":description.strip()[:200],
             "weakness": weakness.strip()[:200],
             "immunity": immunity.strip()[:200],
-            "attacks": [
-                a.strip()[:200] for a in [attack1, attack2, attack3, attack4] if a.strip()
+            "skills": [
+                a.strip()[:200] for a in [skill1, skill2, skill3, skill4] if a.strip()
             ],
             "create_time": datetime.now().isoformat()
         }
@@ -65,14 +67,15 @@ def save_monster(
         return [
             f"✅ 成功保存了{level_range}的{len(saved_files)}个怪物文件",  # status
             "",  # monster_type
+            "",  # description
             "",  # weakness
             "",  # immunity
             start_level,  # start_level
             end_level,  # end_level
-            "",  # attack1
-            "",  # attack2
-            "",  # attack3
-            ""  # attack4
+            "",  # skill1
+            "",  # skill2
+            "",  # skill3
+            ""  # skill4
         ]
 
     except ValueError:  # 输入不是有效数值
@@ -121,6 +124,11 @@ with gr.Blocks(title="怪物编辑器") as app:
                 placeholder="例如：哥布林, 不要超过200字",
                 max_length=200
             )
+            description = gr.Textbox(
+                label="描述",
+                placeholder="例如：一种绿皮生物, 不要超过200字",
+                max_length=200
+            )
             weakness = gr.Textbox(
                 label="弱点属性",
                 placeholder="例如：火属性, 不要超过200字",
@@ -154,23 +162,23 @@ with gr.Blocks(title="怪物编辑器") as app:
                     )
 
         with gr.Column():
-            attack1 = gr.Textbox(
-                label="攻击方式 1",
+            skill1 = gr.Textbox(
+                label="技能 1",
                 placeholder="例如：重击, 不要超过200字",
                 max_length=200
             )
-            attack2 = gr.Textbox(
-                label="攻击方式 2",
+            skill2 = gr.Textbox(
+                label="技能 2",
                 placeholder="例如：冲锋, 不要超过200字",
                 max_length=200
             )
-            attack3 = gr.Textbox(
-                label="攻击方式 3",
+            skill3 = gr.Textbox(
+                label="技能 3",
                 placeholder="例如：眩晕, 不要超过200字",
                 max_length=200
             )
-            attack4 = gr.Textbox(
-                label="攻击方式 4",
+            skill4 = gr.Textbox(
+                label="技能 4",
                 placeholder="例如：横扫, 不要超过200字",
                 max_length=200
             )
@@ -183,8 +191,8 @@ with gr.Blocks(title="怪物编辑器") as app:
     # 保存按钮事件绑定
     save_btn.click(
         save_monster,
-        inputs=[monster_type, weakness, immunity, start_level, end_level, attack1, attack2, attack3, attack4],
-        outputs=[status, monster_type, weakness, immunity, start_level, end_level, attack1, attack2, attack3, attack4]
+        inputs=[monster_type, description,weakness, immunity, start_level, end_level, skill1, skill2, skill3, skill4],
+        outputs=[status, monster_type,description, weakness, immunity, start_level, end_level, skill1, skill2, skill3, skill4]
     )
 
     # 添加一个清空按钮
@@ -196,20 +204,21 @@ with gr.Blocks(title="怪物编辑器") as app:
         return [
             "输入已清空",  # status
             "",  # monster_type
+            "",  # description
             "",  # weakness
             "",  # immunity
             1,  # start_level
             1,  # end_level
-            "",  # attack1
-            "",  # attack2
-            "",  # attack3
-            ""  # attack4
+            "",  # skill1
+            "",  # skill2
+            "",  # skill3
+            ""  # skill4
         ]
 
 
     clear_btn.click(
         clear_form,
-        outputs=[status, monster_type, weakness, immunity, start_level, end_level, attack1, attack2, attack3, attack4]
+        outputs=[status, monster_type,description, weakness, immunity, start_level, end_level, skill1, skill2, skill3, skill4]
     )
 
     # 楼层输入验证
